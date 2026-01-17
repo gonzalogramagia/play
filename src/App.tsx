@@ -6,7 +6,7 @@ import { Routes, Route } from 'react-router-dom'
 
 function AppContent() {
     return (
-        <div className="max-w-4xl mx-4 mt-6 lg:mx-auto">
+        <div className="max-w-4xl mx-4 mt-4 md:mt-6 lg:mx-auto">
             <div
                 className="fixed inset-0 z-[-1] bg-cover bg-center bg-fixed bg-no-repeat opacity-5"
                 style={{ backgroundImage: "url('/wallpaper.png')" }}

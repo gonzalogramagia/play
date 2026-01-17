@@ -288,7 +288,7 @@ export const DinoGame: React.FC = () => {
 
             <div className="mt-6 flex flex-wrap justify-center gap-4 text-neutral-500 text-sm font-medium">
                 <div
-                    className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-full shadow-sm border border-neutral-100 cursor-pointer active:scale-95 transition-transform"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-full shadow-sm border border-neutral-100 cursor-pointer active:scale-95 transition-transform select-none touch-none"
                     onClick={jump}
                 >
                     {!isMobile && (
