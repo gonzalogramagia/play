@@ -12,7 +12,41 @@ export const DinoGame: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
-    const [highScore, setHighScore] = useState(0);
+    const [highScore, setHighScore] = useState(() => {
+        const saved = localStorage.getItem('dino-high-score');
+        const savedTime = localStorage.getItem('dino-high-score-time');
+
+        if (saved && savedTime) {
+            const lastReset = parseInt(savedTime);
+            const now = new Date();
+
+            // Find the most recent Friday 23:59 that has passed
+            let lastFriday = new Date(now);
+            while (lastFriday.getDay() !== 5) {
+                lastFriday.setDate(lastFriday.getDate() - 1);
+            }
+            lastFriday.setHours(23, 59, 0, 0);
+
+            // If now is Friday but before 23:59, the "relevant" reset was the PREVIOUS Friday
+            if (now.getDay() === 5 && (now.getHours() < 23 || (now.getHours() === 23 && now.getMinutes() < 59))) {
+                lastFriday.setDate(lastFriday.getDate() - 7);
+            }
+
+            if (lastReset < lastFriday.getTime()) {
+                localStorage.removeItem('dino-high-score');
+                localStorage.removeItem('dino-high-score-time');
+                return 0;
+            }
+            return parseInt(saved);
+        }
+        return 0;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('dino-high-score', highScore.toString());
+        localStorage.setItem('dino-high-score-time', Date.now().toString());
+    }, [highScore]);
+
     const [gameStarted, setGameStarted] = useState(false);
     // ... existing constants ...
     // Game constants

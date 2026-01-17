@@ -12,7 +12,8 @@
 - **🛡️ Varied Obstacles**: Face different types of shovels with varying heights and widths, randomly generated to keep you on your toes.
 - **🌍 Internationalization**: Fully localized interface with English (EN) and Spanish (ES) support.
 - **🎨 Dynamic Visuals**: Smooth animations rendered using HTML5 Canvas API.
-- **📈 High Score Tracking**: Compete against your own best performance.
+- **📈 High Score Tracking**: Persist your best performance with local storage.
+- **📅 Weekly Reset**: Compete for the best score of the week—high scores automatically reset every Friday at 23:59.
 - **🕹️ Multiple Controls**: Jump using Spacebar, the 'W' key, or by clicking anywhere on the game area.
 
 ---
@@ -38,10 +39,10 @@
 - **Objective**: Avoid the shovels for as long as possible to increase your score!
 
 ### 🧭 Quick Access
-- **Today** (⏰): Go to your daily task manager
-- **Emojis** (😊): Access the emoji picker app
+- **Today** (📅): Go to your daily task manager
+- **Emojis** (😎): Access the emoji picker app
 - **Music** (🎵): Navigate to your video manager
-- **Play** (🕹): You are here!
+- **Play** (🎮): You are here!
 - **Moovimiento** (⚡): Navigate to Moovimiento
 
 ---
