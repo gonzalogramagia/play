@@ -60,7 +60,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             gameOver: "FIN DEL JUEGO",
             gameRestart: "PRESIONA ESPACIO PARA REINICIAR",
             gameJump: "para saltar",
-            gameStartKey: "para empezar"
+            gameStartKey: "para empezar",
+            gameStartMobile: "TOUCH PARA EMPEZAR",
+            gameJumpMobile: "Touch para saltar"
         },
         en: {
             ariaHome: "Go to Today",
@@ -95,7 +97,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             gameOver: "GAME OVER",
             gameRestart: "PRESS SPACE TO RESTART",
             gameJump: "to jump",
-            gameStartKey: "to start"
+            gameStartKey: "to start",
+            gameStartMobile: "TOUCH TO START",
+            gameJumpMobile: "Touch to jump"
         }
     }
 

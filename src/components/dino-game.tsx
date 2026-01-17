@@ -72,6 +72,17 @@ export const DinoGame: React.FC = () => {
         }
     };
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768 || navigator.maxTouchPoints > 0);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
@@ -223,7 +234,7 @@ export const DinoGame: React.FC = () => {
                 ctx.fillStyle = 'white';
                 ctx.font = '24px Inter, system-ui, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(t('gameStart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+                ctx.fillText(isMobile ? t('gameStartMobile') : t('gameStart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
             }
 
             if (gameOver) {
@@ -234,7 +245,7 @@ export const DinoGame: React.FC = () => {
                 ctx.textAlign = 'center';
                 ctx.fillText(t('gameOver'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20);
                 ctx.font = '20px Inter, system-ui, sans-serif';
-                ctx.fillText(t('gameRestart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20);
+                ctx.fillText(isMobile ? t('gameStartMobile') : t('gameRestart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20);
             }
         };
 
@@ -251,10 +262,10 @@ export const DinoGame: React.FC = () => {
                 cancelAnimationFrame(animationFrameId.current);
             }
         };
-    }, [gameStarted, gameOver, score, highScore, t]);
+    }, [gameStarted, gameOver, score, highScore, t, isMobile]);
 
     return (
-        <div className="flex flex-col items-center w-full max-w-4xl mx-auto bg-white/50 backdrop-blur-sm p-4 md:p-8 rounded-3xl border border-white/20 shadow-xl overflow-hidden">
+        <div className="flex flex-col items-center w-full max-w-4xl mx-auto bg-white/50 backdrop-blur-sm p-4 md:p-8 rounded-3xl border border-white/20 shadow-xl overflow-hidden px-3 md:px-8">
             <div className="w-full flex justify-between items-center mb-4 px-2">
                 <div className="flex flex-col">
                     <span className="text-xs uppercase tracking-wider text-neutral-500 font-bold">{t('gameScore')}</span>
@@ -276,9 +287,14 @@ export const DinoGame: React.FC = () => {
             </div>
 
             <div className="mt-6 flex flex-wrap justify-center gap-4 text-neutral-500 text-sm font-medium">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-full shadow-sm border border-neutral-100">
-                    <kbd className="px-2 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-xs">Space</kbd>
-                    <span>{t('gameJump')}</span>
+                <div
+                    className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-full shadow-sm border border-neutral-100 cursor-pointer active:scale-95 transition-transform"
+                    onClick={jump}
+                >
+                    {!isMobile && (
+                        <kbd className="px-2 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-xs">Space</kbd>
+                    )}
+                    <span>{isMobile ? t('gameJumpMobile') : t('gameJump')}</span>
                 </div>
             </div>
         </div>
