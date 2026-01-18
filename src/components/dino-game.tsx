@@ -483,7 +483,7 @@ export const DinoGame: React.FC = () => {
                 const isVisible = (Date.now() % 4500) < 3000;
                 if (isVisible) {
                     ctx.fillStyle = 'white';
-                    ctx.font = '24px Inter, system-ui, sans-serif';
+                    ctx.font = isMobile ? '28px Inter, system-ui, sans-serif' : '24px Inter, system-ui, sans-serif';
                     ctx.textAlign = 'center';
                     ctx.fillText(isMobile ? t('gameStartMobile') : t('gameStart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
                 }
@@ -499,8 +499,8 @@ export const DinoGame: React.FC = () => {
                 if (Date.now() - gameOverTime.current > 1000) {
                     const isVisible = (Date.now() % 4500) < 3000;
                     if (isVisible) {
-                        ctx.font = '20px Inter, system-ui, sans-serif';
-                        ctx.fillText(isMobile ? t('gameStartMobile') : t('gameRestart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20);
+                        ctx.font = isMobile ? '24px Inter, system-ui, sans-serif' : '20px Inter, system-ui, sans-serif';
+                        ctx.fillText(isMobile ? t('gameRestartMobile') : t('gameRestart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20);
                     }
                 }
             }
@@ -530,7 +530,7 @@ export const DinoGame: React.FC = () => {
                 </div>
                 <div className="flex flex-col items-end group relative">
                     <div className="flex items-center gap-1.5 cursor-default md:cursor-help">
-                        <span className="text-xs uppercase tracking-wider text-neutral-500 font-bold">{t('gameHighScore')}</span>
+                        <span className="text-xs uppercase tracking-wider text-neutral-500 font-bold">{isMobile ? t('gameHighScoreMobile') : t('gameHighScore')}</span>
                         <Info size={14} className="hidden md:block text-neutral-400 group-hover:text-[#6866D6] transition-colors" />
                     </div>
                     <span className="text-2xl font-black text-[#6866D6] tabular-nums">{highScore.toString().padStart(5, '0')}</span>
