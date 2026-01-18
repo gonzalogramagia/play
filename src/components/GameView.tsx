@@ -13,7 +13,7 @@ export function GameView() {
                     onClick={() => window.open('https://fakeupdate.net/win10ue/', '_blank')}
                     className={`cursor-pointer h-52 md:h-60 w-auto object-contain hover:scale-105 transition-transform duration-500 drop-shadow-2xl mt-0 md:mt-0 md:mb-0`}
                 />
-                <div className="flex flex-col items-center md:items-start md:gap-0 -mt-8 md:mt-0 md:-ml-4">
+                <div className="flex flex-col items-center md:items-start md:gap-0 -mt-4 md:mt-0 md:-ml-4">
                     <h1 className="mx-auto md:mx-0 md:max-w-xl text-3xl md:text-5xl font-extrabold text-center md:text-left text-neutral-900 leading-tight tracking-tight">
                         {language === 'en' ? (
                             <>

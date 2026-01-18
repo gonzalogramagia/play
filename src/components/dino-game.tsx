@@ -1,16 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Info } from 'lucide-react';
 import { useLanguage } from '../contexts/language-context';
 
 interface Obstacle {
     x: number;
+    y?: number;
     width: number;
     height: number;
+    health: number;
+    maxHealth: number;
+    isInvincible?: boolean;
 }
+
+interface Projectile {
+    x: number;
+    y: number;
+    power: number;
+}
+
+type GameMode = 'classic' | 'insane';
 
 export const DinoGame: React.FC = () => {
     const { t } = useLanguage();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [gameOver, setGameOver] = useState(false);
+    const [isNewHighScore, setIsNewHighScore] = useState(false);
+    const [gameMode, setGameMode] = useState<GameMode>('classic');
     const [score, setScore] = useState(0);
     const [highScore, setHighScore] = useState(() => {
         const saved = localStorage.getItem('dino-high-score');
@@ -55,13 +70,16 @@ export const DinoGame: React.FC = () => {
     const DINO_WIDTH = 40;
     const DINO_HEIGHT = 40;
     const GROUND_Y = 180;
-    const JUMP_FORCE = 12;
+    const JUMP_FORCE = 12.8;
     const GRAVITY = 0.6;
     const INITIAL_SPEED = 5;
     const SPEED_INCREMENT = 0.001;
+    const HORIZONTAL_SPEED = 5;
+    const DINO_INITIAL_X = 50;
 
     // Game state refs (for the loop)
     const dinoY = useRef(GROUND_Y - DINO_HEIGHT);
+    const dinoX = useRef(DINO_INITIAL_X);
     const dinoVelocity = useRef(0);
     const isJumping = useRef(false);
     const obstacles = useRef<Obstacle[]>([]);
@@ -70,6 +88,15 @@ export const DinoGame: React.FC = () => {
     const animationFrameId = useRef<number | null>(null);
     const handImage = useRef<HTMLImageElement | null>(null);
     const shovelImage = useRef<HTMLImageElement | null>(null);
+    const rockImage = useRef<HTMLImageElement | null>(null);
+    const copsImage = useRef<HTMLImageElement | null>(null);
+    const keysPressed = useRef<{ [key: string]: boolean }>({});
+    const projectiles = useRef<Projectile[]>([]);
+    const lastShootTime = useRef(0);
+    const kPressStartTime = useRef<number | null>(null);
+    const [chargePower, setChargePower] = useState(0);
+    const SHOOT_COOLDOWN = 350; // ms
+
 
     useEffect(() => {
         const hand = new Image();
@@ -83,18 +110,36 @@ export const DinoGame: React.FC = () => {
         shovel.onload = () => {
             shovelImage.current = shovel;
         };
+
+        const rock = new Image();
+        rock.src = '/rock.png';
+        rock.onload = () => {
+            rockImage.current = rock;
+        };
+
+        const cops = new Image();
+        cops.src = '/cops.png';
+        cops.onload = () => {
+            copsImage.current = cops;
+        };
     }, []);
 
     const startGame = () => {
         setGameOver(false);
+        setIsNewHighScore(false);
         setGameStarted(true);
         setScore(0);
         dinoY.current = GROUND_Y - DINO_HEIGHT;
+        dinoX.current = DINO_INITIAL_X;
         dinoVelocity.current = 0;
         isJumping.current = false;
         obstacles.current = [];
-        gameSpeed.current = INITIAL_SPEED;
+        projectiles.current = [];
+        kPressStartTime.current = null;
+        setChargePower(0);
+        gameSpeed.current = gameMode === 'insane' ? INITIAL_SPEED * 1.5 : INITIAL_SPEED;
         frameCount.current = 0;
+        keysPressed.current = {};
     };
 
     const jump = () => {
@@ -106,11 +151,29 @@ export const DinoGame: React.FC = () => {
         }
     };
 
+    const shoot = (power: number = 1) => {
+        const now = Date.now();
+        if (gameMode === 'insane' && gameStarted && !gameOver && now - lastShootTime.current > SHOOT_COOLDOWN) {
+            projectiles.current.push({
+                x: dinoX.current + DINO_WIDTH,
+                y: dinoY.current + DINO_HEIGHT / 2 - (10 * power),
+                power: power
+            });
+            lastShootTime.current = now;
+        }
+    };
+
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
+        if (isMobile && gameMode === 'insane') {
+            setGameMode('classic');
+        }
+    }, [isMobile, gameMode]);
+
+    useEffect(() => {
         const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768 || navigator.maxTouchPoints > 0);
+            setIsMobile(window.innerWidth < 768);
         };
         checkMobile();
         window.addEventListener('resize', checkMobile);
@@ -119,15 +182,67 @@ export const DinoGame: React.FC = () => {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+            keysPressed.current[e.code] = true;
+
+            // Prevent scrolling with game keys
+            if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+                e.preventDefault();
+            }
+
+            // Jumping & Starting
+            if (!gameStarted || gameOver) {
+                e.preventDefault();
+                startGame();
+                return;
+            }
+
+            // Normal game keys when game is running
+            const jumpKeys = e.code === 'ArrowUp' || e.code === 'KeyW' || (e.code === 'Space' && gameMode === 'classic');
+
+            if (jumpKeys) {
                 e.preventDefault();
                 jump();
+            }
+
+            // Charging (Space in Insane mode)
+            if (e.code === 'Space' && gameMode === 'insane' && gameStarted && !gameOver && !kPressStartTime.current) {
+                e.preventDefault();
+                kPressStartTime.current = Date.now();
+            }
+        };
+
+        const handleKeyUp = (e: KeyboardEvent) => {
+            keysPressed.current[e.code] = false;
+
+            if (e.code === 'Space' && gameMode === 'insane' && kPressStartTime.current) {
+                const pressDuration = Date.now() - kPressStartTime.current;
+                // Power scales more moderately: from 0.7 to 2.2
+                const power = Math.min(2.2, 0.7 + (pressDuration / 600));
+                shoot(power);
+                kPressStartTime.current = null;
+                setChargePower(0);
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [gameStarted, gameOver]);
+        window.addEventListener('keyup', handleKeyUp);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
+        };
+    }, [gameStarted, gameOver, gameMode]);
+
+    useEffect(() => {
+        if (gameMode !== 'insane') return;
+
+        const interval = setInterval(() => {
+            if (kPressStartTime.current) {
+                const duration = Date.now() - kPressStartTime.current;
+                setChargePower(Math.min(100, (duration / 600) * 100));
+            }
+        }, 50);
+        return () => clearInterval(interval);
+    }, [gameMode]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -139,7 +254,8 @@ export const DinoGame: React.FC = () => {
             if (!gameStarted || gameOver) return;
 
             frameCount.current++;
-            gameSpeed.current += SPEED_INCREMENT;
+            const speedInc = gameMode === 'insane' ? SPEED_INCREMENT * 2 : SPEED_INCREMENT;
+            gameSpeed.current += speedInc;
 
             // Update Dino
             dinoVelocity.current += GRAVITY;
@@ -151,9 +267,22 @@ export const DinoGame: React.FC = () => {
                 isJumping.current = false;
             }
 
+            // Update Horizontal Position (Only in Insane mode)
+            if (gameMode === 'insane') {
+                if (keysPressed.current['ArrowLeft'] || keysPressed.current['KeyA']) {
+                    dinoX.current = Math.max(0, dinoX.current - HORIZONTAL_SPEED);
+                }
+                if (keysPressed.current['ArrowRight'] || keysPressed.current['KeyD']) {
+                    dinoX.current = Math.min(CANVAS_WIDTH - DINO_WIDTH, dinoX.current + HORIZONTAL_SPEED);
+                }
+            } else {
+                dinoX.current = DINO_INITIAL_X;
+            }
+
             // Update Obstacles
-            if (frameCount.current % Math.floor(100 / (gameSpeed.current / 5)) === 0) {
-                if (Math.random() > 0.5) {
+            const obstacleFreq = gameMode === 'insane' ? 60 : 100;
+            if (frameCount.current % Math.floor(obstacleFreq / (gameSpeed.current / 5)) === 0) {
+                if (Math.random() > (gameMode === 'insane' ? 0.3 : 0.5)) {
                     // Generate diverse obstacle shapes (width and height)
                     const type = Math.random();
                     let w, h;
@@ -171,30 +300,48 @@ export const DinoGame: React.FC = () => {
                         h = 20 + Math.random() * 10;
                     }
 
+                    const health = gameMode === 'insane' ? Math.floor(Math.random() * 3) + 1 : 1;
+                    const isCop = gameMode === 'insane' && Math.random() < 0.2; // 20% chance for cops in insane
+
+                    // Cops always have fixed size: double height of dino
+                    // Width is adjusted to maintain a better car-like aspect ratio (approx 3/2)
+                    const finalH = isCop ? DINO_HEIGHT * 2 : h;
+                    const finalW = isCop ? 110 : w;
+
                     obstacles.current.push({
                         x: CANVAS_WIDTH,
-                        width: w,
-                        height: h,
+                        y: isCop ? GROUND_Y - finalH + 18 : (gameMode === 'insane' ? Math.random() * (GROUND_Y - finalH) : GROUND_Y - finalH),
+                        width: finalW,
+                        height: finalH,
+                        health: isCop ? Infinity : health,
+                        maxHealth: isCop ? Infinity : health,
+                        isInvincible: isCop
                     });
                 }
             }
+
+            // Update Projectiles
+            projectiles.current = projectiles.current.filter(p => {
+                p.x += 10;
+                return p.x < CANVAS_WIDTH;
+            });
 
             obstacles.current = obstacles.current.filter((obs) => {
                 obs.x -= gameSpeed.current;
 
                 // Collision detection
                 const dinoBox = {
-                    x: 50,
+                    x: dinoX.current + 5,
                     y: dinoY.current,
                     width: DINO_WIDTH - 10,
                     height: DINO_HEIGHT - 5,
                 };
 
                 const obsBox = {
-                    x: obs.x,
-                    y: GROUND_Y - obs.height,
-                    width: obs.width,
-                    height: obs.height,
+                    x: obs.x + (obs.isInvincible ? 15 : 10),
+                    y: (obs.y ?? GROUND_Y - obs.height) + (obs.isInvincible ? 10 : 8),
+                    width: obs.width - (obs.isInvincible ? 30 : 20),
+                    height: obs.height - (obs.isInvincible ? 15 : 12),
                 };
 
                 if (
@@ -204,10 +351,31 @@ export const DinoGame: React.FC = () => {
                     dinoBox.y + dinoBox.height > obsBox.y
                 ) {
                     setGameOver(true);
-                    if (score > highScore) setHighScore(score);
+                    if (score > highScore) {
+                        setHighScore(score);
+                        setIsNewHighScore(true);
+                    }
                 }
 
-                return obs.x + obs.width > 0;
+                // Projectile collision
+                projectiles.current = projectiles.current.filter(p => {
+                    const size = 12 + (8 * p.power);
+                    const pBox = { x: p.x, y: p.y, width: size, height: size };
+                    if (
+                        pBox.x < obsBox.x + obsBox.width &&
+                        pBox.x + pBox.width > obsBox.x &&
+                        pBox.y < obsBox.y + obsBox.height &&
+                        pBox.y + pBox.height > obsBox.y
+                    ) {
+                        if (!obs.isInvincible) {
+                            obs.health -= p.power;
+                        }
+                        return false;
+                    }
+                    return true;
+                });
+
+                return obs.x + obs.width > 0 && obs.health > 0;
             });
 
             setScore(Math.floor(frameCount.current / 5));
@@ -225,7 +393,7 @@ export const DinoGame: React.FC = () => {
             ctx.stroke();
 
             // Draw Hand (Player)
-            const dX = 50;
+            const dX = dinoX.current;
             const dY = dinoY.current;
 
             if (handImage.current) {
@@ -242,7 +410,10 @@ export const DinoGame: React.FC = () => {
 
             // Draw Obstacles (Cropped and Varied Shovels)
             obstacles.current.forEach((obs) => {
-                if (shovelImage.current) {
+                const drawY = obs.y ?? GROUND_Y - obs.height;
+                if (obs.isInvincible && copsImage.current) {
+                    ctx.drawImage(copsImage.current, obs.x, drawY, obs.width, obs.height);
+                } else if (!obs.isInvincible && shovelImage.current) {
                     const img = shovelImage.current;
                     // Crop logic: 1/3 left and 1/3 right removed. Middle 1/3 kept.
                     const sx = img.naturalWidth / 3;
@@ -253,12 +424,35 @@ export const DinoGame: React.FC = () => {
                     ctx.drawImage(
                         img,
                         sx, sy, sw, sh,     // Source (middle 1/3)
-                        obs.x, GROUND_Y - obs.height, obs.width, obs.height // Target
+                        obs.x, drawY, obs.width, obs.height // Target
                     );
+
+                    // Draw Health Bar
+                    if (gameMode === 'insane' && !obs.isInvincible) {
+                        const barWidth = obs.width;
+                        const barHeight = 4;
+                        ctx.fillStyle = '#ef4444';
+                        ctx.fillRect(obs.x, drawY - 10, barWidth, barHeight);
+                        ctx.fillStyle = '#22c55e';
+                        ctx.fillRect(obs.x, drawY - 10, barWidth * (obs.health / obs.maxHealth), barHeight);
+                    }
                 } else {
                     // Fallback
                     ctx.fillStyle = '#94a3b8';
-                    ctx.fillRect(obs.x, GROUND_Y - obs.height, obs.width, obs.height);
+                    ctx.fillRect(obs.x, obs.y ?? GROUND_Y - obs.height, obs.width, obs.height);
+                }
+            });
+
+            // Draw Projectiles
+            projectiles.current.forEach(p => {
+                const size = 12 + (8 * p.power);
+                if (rockImage.current) {
+                    ctx.drawImage(rockImage.current, p.x, p.y, size, size);
+                } else {
+                    ctx.fillStyle = '#666';
+                    ctx.beginPath();
+                    ctx.arc(p.x + size / 2, p.y + size / 2, size / 2, 0, Math.PI * 2);
+                    ctx.fill();
                 }
             });
 
@@ -272,12 +466,12 @@ export const DinoGame: React.FC = () => {
             }
 
             if (gameOver) {
-                ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
+                ctx.fillStyle = isNewHighScore ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255, 0, 0, 0.2)';
                 ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
                 ctx.fillStyle = '#333';
                 ctx.font = 'bold 30px Inter, system-ui, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(t('gameOver'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20);
+                ctx.fillText(isNewHighScore ? t('gameNewHighScore') : t('gameOver'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20);
                 ctx.font = '20px Inter, system-ui, sans-serif';
                 ctx.fillText(isMobile ? t('gameStartMobile') : t('gameRestart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20);
             }
@@ -299,15 +493,27 @@ export const DinoGame: React.FC = () => {
     }, [gameStarted, gameOver, score, highScore, t, isMobile]);
 
     return (
-        <div className="flex flex-col items-center w-full max-w-4xl mx-auto bg-white/50 backdrop-blur-sm p-4 md:p-8 rounded-3xl border border-white/20 shadow-xl overflow-hidden px-3 md:px-8">
+        <div className="flex flex-col items-center w-full max-w-4xl mx-auto bg-white/50 backdrop-blur-sm p-4 md:p-8 rounded-3xl border border-white/20 shadow-xl px-3 md:px-8">
             <div className="w-full flex justify-between items-center mb-4 px-2">
                 <div className="flex flex-col">
                     <span className="text-xs uppercase tracking-wider text-neutral-500 font-bold">{t('gameScore')}</span>
                     <span className="text-2xl font-black text-neutral-800 tabular-nums">{score.toString().padStart(5, '0')}</span>
                 </div>
-                <div className="flex flex-col items-end">
-                    <span className="text-xs uppercase tracking-wider text-neutral-500 font-bold">{t('gameHighScore')}</span>
+                <div className="flex flex-col items-end group relative">
+                    <div className="flex items-center gap-1.5 cursor-default md:cursor-help">
+                        <span className="text-xs uppercase tracking-wider text-neutral-500 font-bold">{t('gameHighScore')}</span>
+                        <Info size={14} className="hidden md:block text-neutral-400 group-hover:text-[#6866D6] transition-colors" />
+                    </div>
                     <span className="text-2xl font-black text-[#6866D6] tabular-nums">{highScore.toString().padStart(5, '0')}</span>
+
+                    {/* Tooltip - Only visible on desktop/hover */}
+                    <div className="hidden md:block absolute top-0 right-0 -translate-y-[115%] opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50">
+                        <div className="bg-neutral-900 text-white text-xs py-2 px-3 rounded-xl shadow-2xl whitespace-nowrap border border-white/10 backdrop-blur-md">
+                            {t('gameHighScoreReset')}
+                            {/* Bottom Arrow */}
+                            <div className="absolute -bottom-1 right-3 w-2 h-2 bg-neutral-900 rotate-45 border-r border-b border-white/10" />
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -320,16 +526,76 @@ export const DinoGame: React.FC = () => {
                 />
             </div>
 
-            <div className="mt-6 flex flex-wrap justify-center gap-4 text-neutral-500 text-sm font-medium">
-                <div
-                    className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-full shadow-sm border border-neutral-100 cursor-pointer active:scale-95 transition-transform select-none touch-none"
-                    onClick={jump}
-                >
-                    {!isMobile && (
-                        <kbd className="px-2 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-xs">Space</kbd>
+            <div className={`${isMobile ? 'mt-4' : 'mt-8'} flex flex-col items-center gap-6`}>
+                {/* First Line: Actions */}
+                <div className="flex flex-wrap justify-center items-center gap-4">
+                    <div
+                        className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-full shadow-sm border border-neutral-100 cursor-pointer active:scale-95 transition-transform select-none touch-none"
+                        onClick={jump}
+                    >
+                        {!isMobile && (
+                            <div className="flex gap-1">
+                                <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold">
+                                    {gameMode === 'classic' ? t('gameKeySpace') : 'W'}
+                                </kbd>
+                                <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold">↑</kbd>
+                            </div>
+                        )}
+                        <span className="text-neutral-500 text-xs font-bold uppercase tracking-wider">{isMobile ? t('gameJumpMobile') : t('gameJump')}</span>
+                    </div>
+
+                    {gameMode === 'insane' && !isMobile && (
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-full shadow-sm border border-neutral-100 select-none">
+                            <div className="flex gap-1">
+                                <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold">A</kbd>
+                                <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold">D</kbd>
+                                <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold">←</kbd>
+                                <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold">→</kbd>
+                            </div>
+                            <span className="text-neutral-500 text-xs font-bold uppercase tracking-wider">{t('gameMove')}</span>
+                        </div>
                     )}
-                    <span>{isMobile ? t('gameJumpMobile') : t('gameJump')}</span>
+
+                    {gameMode === 'insane' && (
+                        <div
+                            className="relative flex items-center gap-2 px-3 py-1.5 bg-neutral-800 text-white rounded-full shadow-sm cursor-pointer active:scale-95 transition-transform select-none touch-none overflow-hidden group/shoot"
+                            onMouseDown={() => { if (!isMobile) kPressStartTime.current = Date.now(); }}
+                            onMouseUp={() => { if (!isMobile && kPressStartTime.current) { shoot(Math.min(2.2, 0.7 + ((Date.now() - kPressStartTime.current) / 600))); kPressStartTime.current = null; setChargePower(0); } }}
+                            onTouchStart={(e) => { e.preventDefault(); kPressStartTime.current = Date.now(); }}
+                            onTouchEnd={(e) => { e.preventDefault(); if (kPressStartTime.current) { shoot(Math.min(2.2, 0.7 + ((Date.now() - kPressStartTime.current) / 600))); kPressStartTime.current = null; setChargePower(0); } }}
+                        >
+                            <div
+                                className="absolute inset-0 bg-orange-600 transition-all duration-75 origin-left"
+                                style={{ width: `${chargePower}%`, opacity: chargePower > 0 ? 1 : 0 }}
+                            />
+
+                            <div className="relative z-10 flex items-center gap-2">
+                                {!isMobile && (
+                                    <kbd className="px-2 py-0.5 bg-neutral-700 rounded border border-neutral-600 text-white text-[10px] font-bold group-hover/shoot:border-neutral-500 transition-colors uppercase">{t('gameKeySpace')}</kbd>
+                                )}
+                                <span className="text-xs font-bold uppercase tracking-wider">{t('gameShoot')}</span>
+                            </div>
+                        </div>
+                    )}
                 </div>
+
+                {/* Second Line: Mode Switch (Hidden on mobile) */}
+                {!isMobile && (
+                    <div className="flex items-center gap-2 p-1.5 bg-neutral-100/50 rounded-2xl border border-neutral-200">
+                        <button
+                            onClick={() => { setGameMode('classic'); startGame(); }}
+                            className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer ${gameMode === 'classic' ? 'bg-[#6866D6] text-white shadow-md scale-105' : 'text-neutral-400 hover:bg-neutral-200'}`}
+                        >
+                            {t('gameModeClassic')}
+                        </button>
+                        <button
+                            onClick={() => { setGameMode('insane'); startGame(); }}
+                            className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all cursor-pointer ${gameMode === 'insane' ? 'bg-[#ff4b4b] text-white shadow-md scale-105' : 'text-neutral-400 hover:bg-neutral-200'}`}
+                        >
+                            {t('gameModeInsane')}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
