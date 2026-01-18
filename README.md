@@ -9,12 +9,14 @@
 ## ✨ Key Features
 
 - **🤚 Custom Character**: Play as a hand in a grabbing position.
-- **🛡️ Varied Obstacles**: Face different types of shovels with varying heights and widths, randomly generated to keep you on your toes.
+- **🔥 Multiple Modes**: Choose between **Classic** (original experience) and **Insane / Desquiciado** (enhanced challenge).
+- **🛡️ Varied Obstacles**: Face different types of shovels and even **Invincible Cops** that block your projectiles.
+- **☄️ Combat System**: In Insane Mode, use the **Spacebar** to charge and shoot rocks to destroy shovels.
+- **↔️ Horizontal Movement**: Move left and right in Insane Mode for precise positioning.
 - **🌍 Internationalization**: Fully localized interface with English (EN) and Spanish (ES) support.
-- **🎨 Dynamic Visuals**: Smooth animations rendered using HTML5 Canvas API.
 - **📈 High Score Tracking**: Persist your best performance with local storage.
 - **📅 Weekly Reset**: Compete for the best score of the week—high scores automatically reset every Friday at 23:59.
-- **🕹️ Multiple Controls**: Jump using Spacebar, the 'W' key, or by clicking anywhere on the game area.
+- **🕹️ Multiple Controls**: Jump using Spacebar (Classic), 'W' key, or Arrow Up.
 
 ---
 
@@ -34,9 +36,18 @@
 - The game automatically switches language based on the route (e.g., `/en` for English).
 
 ### 🚀 How to Play
-- **Jump**: Press **Space**, **W**, or **Click** on the game canvas.
-- **Start/Restart**: Press **Space** or **Click** when the game is over to try again.
-- **Objective**: Avoid the shovels for as long as possible to increase your score!
+#### **General**
+- **Start/Restart**: Press **Any Key** when the game is over or starting.
+- **Objective**: Avoid obstacles to increase your score!
+
+#### **Classic Mode**
+- **Jump**: Press **Space**, **W**, **Arrow Up**, or **Click**.
+
+#### **Insane / Desquiciado Mode**
+- **Jump**: Press **W** or **Arrow Up**.
+- **Movement**: Use **A / D** or **Left / Right Arrows** to move horizontally.
+- **Shoot**: Hold and release **Space** to charge and fire a rock.
+- **Enemies**: Destructible shovels (have health bars) and **Invincible Cops** (must be jumped over).
 
 ### 🧭 Quick Access
 - **Today** (📅): Go to your daily task manager
