@@ -75,6 +75,8 @@ export const DinoGame: React.FC = () => {
     const INITIAL_SPEED = 5;
     const SPEED_INCREMENT = 0.001;
     const HORIZONTAL_SPEED = 5;
+    const INITIAL_DRAG_SPEED = 0.5;
+    const DRAG_INCREMENT = 0.0002;
     const DINO_INITIAL_X = 50;
 
     // Game state refs (for the loop)
@@ -94,6 +96,7 @@ export const DinoGame: React.FC = () => {
     const projectiles = useRef<Projectile[]>([]);
     const lastShootTime = useRef(0);
     const kPressStartTime = useRef<number | null>(null);
+    const gameOverTime = useRef(0);
     const [chargePower, setChargePower] = useState(0);
     const SHOOT_COOLDOWN = 350; // ms
 
@@ -146,7 +149,7 @@ export const DinoGame: React.FC = () => {
         if (!isJumping.current && gameStarted && !gameOver) {
             dinoVelocity.current = -JUMP_FORCE;
             isJumping.current = true;
-        } else if (!gameStarted || gameOver) {
+        } else if (!gameStarted || (gameOver && Date.now() - gameOverTime.current > 1000)) {
             startGame();
         }
     };
@@ -191,8 +194,10 @@ export const DinoGame: React.FC = () => {
 
             // Jumping & Starting
             if (!gameStarted || gameOver) {
-                e.preventDefault();
-                startGame();
+                if (!gameStarted || (gameOver && Date.now() - gameOverTime.current > 1000)) {
+                    e.preventDefault();
+                    startGame();
+                }
                 return;
             }
 
@@ -269,11 +274,25 @@ export const DinoGame: React.FC = () => {
 
             // Update Horizontal Position (Only in Insane mode)
             if (gameMode === 'insane') {
+                // Gradual drag back
+                const currentDrag = INITIAL_DRAG_SPEED + (frameCount.current * DRAG_INCREMENT);
+                dinoX.current -= currentDrag;
+
                 if (keysPressed.current['ArrowLeft'] || keysPressed.current['KeyA']) {
-                    dinoX.current = Math.max(0, dinoX.current - HORIZONTAL_SPEED);
+                    dinoX.current -= HORIZONTAL_SPEED;
                 }
                 if (keysPressed.current['ArrowRight'] || keysPressed.current['KeyD']) {
                     dinoX.current = Math.min(CANVAS_WIDTH - DINO_WIDTH, dinoX.current + HORIZONTAL_SPEED);
+                }
+
+                // Game Over if pushed COMPLETELY off-screen to the left
+                if (dinoX.current <= -DINO_WIDTH) {
+                    setGameOver(true);
+                    gameOverTime.current = Date.now();
+                    if (score > highScore) {
+                        setHighScore(score);
+                        setIsNewHighScore(true);
+                    }
                 }
             } else {
                 dinoX.current = DINO_INITIAL_X;
@@ -351,6 +370,7 @@ export const DinoGame: React.FC = () => {
                     dinoBox.y + dinoBox.height > obsBox.y
                 ) {
                     setGameOver(true);
+                    gameOverTime.current = Date.now();
                     if (score > highScore) {
                         setHighScore(score);
                         setIsNewHighScore(true);
@@ -459,10 +479,14 @@ export const DinoGame: React.FC = () => {
             if (!gameStarted) {
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
                 ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-                ctx.fillStyle = 'white';
-                ctx.font = '24px Inter, system-ui, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(isMobile ? t('gameStartMobile') : t('gameStart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+
+                const isVisible = (Date.now() % 4500) < 3000;
+                if (isVisible) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = '24px Inter, system-ui, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(isMobile ? t('gameStartMobile') : t('gameStart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+                }
             }
 
             if (gameOver) {
@@ -472,8 +496,13 @@ export const DinoGame: React.FC = () => {
                 ctx.font = 'bold 30px Inter, system-ui, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.fillText(isNewHighScore ? t('gameNewHighScore') : t('gameOver'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 20);
-                ctx.font = '20px Inter, system-ui, sans-serif';
-                ctx.fillText(isMobile ? t('gameStartMobile') : t('gameRestart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20);
+                if (Date.now() - gameOverTime.current > 1000) {
+                    const isVisible = (Date.now() % 4500) < 3000;
+                    if (isVisible) {
+                        ctx.font = '20px Inter, system-ui, sans-serif';
+                        ctx.fillText(isMobile ? t('gameStartMobile') : t('gameRestart'), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 20);
+                    }
+                }
             }
         };
 
