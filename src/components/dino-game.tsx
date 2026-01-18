@@ -332,16 +332,16 @@ export const DinoGame: React.FC = () => {
                 // Collision detection
                 const dinoBox = {
                     x: dinoX.current + 5,
-                    y: dinoY.current,
+                    y: dinoY.current + 5, // Slightly more forgiving top
                     width: DINO_WIDTH - 10,
-                    height: DINO_HEIGHT - 5,
+                    height: DINO_HEIGHT - 10, // Slightly more forgiving bottom
                 };
 
                 const obsBox = {
                     x: obs.x + (obs.isInvincible ? 15 : 10),
-                    y: (obs.y ?? GROUND_Y - obs.height) + (obs.isInvincible ? 10 : 8),
+                    y: (obs.y ?? GROUND_Y - obs.height) + (obs.isInvincible ? 12 : 10), // Lower top
                     width: obs.width - (obs.isInvincible ? 30 : 20),
-                    height: obs.height - (obs.isInvincible ? 15 : 12),
+                    height: obs.height - (obs.isInvincible ? 20 : 25), // Much shorter from bottom
                 };
 
                 if (
@@ -535,9 +535,10 @@ export const DinoGame: React.FC = () => {
                     >
                         {!isMobile && (
                             <div className="flex gap-1">
-                                <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold">
-                                    {gameMode === 'classic' ? t('gameKeySpace') : 'W'}
-                                </kbd>
+                                {gameMode === 'classic' && (
+                                    <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold uppercase">{t('gameKeySpace')}</kbd>
+                                )}
+                                <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold">W</kbd>
                                 <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded border border-neutral-300 text-neutral-800 text-[10px] font-bold">↑</kbd>
                             </div>
                         )}
