@@ -100,13 +100,13 @@ export const DinoGame: React.FC = () => {
 
     useEffect(() => {
         const hand = new Image();
-        hand.src = '/mano.png';
+        hand.src = '/hand.png';
         hand.onload = () => {
             handImage.current = hand;
         };
 
         const shovel = new Image();
-        shovel.src = '/pala.png';
+        shovel.src = '/shovel.png';
         shovel.onload = () => {
             shovelImage.current = shovel;
         };
