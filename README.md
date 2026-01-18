@@ -1,15 +1,15 @@
-# 🎮 Play (Si agarrás la pala perdés!)
+# 🎮 Mini game
 
-**A high-stakes jumping game where the only rule is: don't touch the shovel.**
+**A high-stakes arcade game where you must dodge shovels, fight back, and survive the relentless drag.**
 
-"Play" is a dinosaur-inspired endless runner where you take control of a hand trying to dodge various types of shovels. It's fast, addictive, and perfect for a quick break.
+"Play" is a fast-paced survival runner. Whether you're dodging classic shovels or blasting through obstacles in Insano Mode, you'll need quick reflexes and precise movement to stay on the screen and climb the weekly leaderboard.
 
 ---
 
 ## ✨ Key Features
 
 - **🤚 Custom Character**: Play as a hand in a grabbing position.
-- **🔥 Multiple Modes**: Choose between **Classic** (original experience) and **Insane / Desquiciado** (enhanced challenge).
+- **🔥 Multiple Modes**: Choose between **Classic** (original experience) and **Insane** (enhanced challenge).
 - **🛡️ Varied Obstacles**: Face different types of shovels and even **Invincible Cops** that block your projectiles.
 - **☄️ Combat System**: In Insane Mode, use the **Spacebar** to charge and shoot rocks to destroy shovels.
 - **↔️ Horizontal Movement**: Move left and right in Insane Mode for precise positioning.
@@ -43,11 +43,12 @@
 #### **Classic Mode**
 - **Jump**: Press **Space**, **W**, **Arrow Up**, or **Click**.
 
-#### **Insane / Desquiciado Mode**
+#### **Insano Mode**
 - **Jump**: Press **W** or **Arrow Up**.
 - **Movement**: Use **A / D** or **Left / Right Arrows** to move horizontally.
 - **Shoot**: Hold and release **Space** to charge and fire a rock.
 - **Enemies**: Destructible shovels (have health bars) and **Invincible Cops** (must be jumped over).
+- **Survival**: Don't let the backward drag (which increases over time!) push you completely off the left side of the screen!
 
 ### 🧭 Quick Access
 - **Today** (📅): Go to your daily task manager
