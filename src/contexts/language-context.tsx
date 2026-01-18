@@ -69,7 +69,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             gameKeySpace: 'Barra Espaciadora',
             gameModeLabel: "Modo:",
             gameModeClassic: "Clásico",
-            gameModeInsane: 'Desquiciado',
+            gameModeInsane: 'Insano',
             gameShoot: 'Cargar y Tirar',
             gameGameOver: '¡JUEGO TERMINADO!',
         },
