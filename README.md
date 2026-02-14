@@ -1,8 +1,8 @@
-# 🎮 Mini game
+# 🎮 Anti Pala Pro
 
 **A high-stakes arcade game where you must dodge shovels, fight back, and survive the relentless drag.**
 
-"Play" is a fast-paced survival runner. Whether you're dodging classic shovels or blasting through obstacles in Insano Mode, you'll need quick reflexes and precise movement to stay on the screen and climb the weekly leaderboard.
+"Anti Pala Pro" is a fast-paced survival runner. Whether you're dodging classic shovels or blasting through obstacles in Insane Mode, you'll need quick reflexes and precise movement to stay on the screen and climb the weekly leaderboard.
 
 ---
 
