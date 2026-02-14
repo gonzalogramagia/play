@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Info } from 'lucide-react';
 import { useLanguage } from '../contexts/language-context';
+import { useGame } from '../contexts/game-context';
 
 interface Obstacle {
     x: number;
@@ -18,14 +19,14 @@ interface Projectile {
     power: number;
 }
 
-type GameMode = 'classic' | 'insane';
+// type GameMode = 'classic' | 'insane';
 
 export const DinoGame: React.FC = () => {
     const { t } = useLanguage();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [gameOver, setGameOver] = useState(false);
     const [isNewHighScore, setIsNewHighScore] = useState(false);
-    const [gameMode, setGameMode] = useState<GameMode>('classic');
+    const { gameMode, setGameMode } = useGame();
     const [score, setScore] = useState(0);
     const [highScore, setHighScore] = useState(() => {
         const saved = localStorage.getItem('dino-high-score');
