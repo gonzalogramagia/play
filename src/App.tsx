@@ -4,12 +4,12 @@ import { FloatingLinks } from './components/floating-links'
 
 import { Routes, Route } from 'react-router-dom'
 
-
+import { AdSidebars } from './components/ad-sidebars'
 
 function AppContent() {
     return (
         <div className="max-w-4xl mx-4 mt-4 md:mt-6 lg:mx-auto">
-
+            <AdSidebars />
             <div
                 className="fixed inset-0 z-[-1] bg-cover bg-center bg-fixed bg-no-repeat opacity-5"
                 style={{ backgroundImage: "url('/wallpaper.png')" }}
