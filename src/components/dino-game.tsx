@@ -507,9 +507,19 @@ export const DinoGame: React.FC = () => {
             }
         };
 
-        const loop = () => {
-            update();
-            draw();
+        let lastTime = 0;
+        const fpsInterval = 1000 / 60;
+
+        const loop = (timestamp: number) => {
+            if (!lastTime) lastTime = timestamp;
+            const elapsed = timestamp - lastTime;
+
+            if (elapsed > fpsInterval) {
+                lastTime = timestamp - (elapsed % fpsInterval);
+                update();
+                draw();
+            }
+
             animationFrameId.current = requestAnimationFrame(loop);
         };
 
