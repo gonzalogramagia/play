@@ -12,7 +12,7 @@ const AD_IMAGES = [
 const getRandomImage = () => AD_IMAGES[Math.floor(Math.random() * AD_IMAGES.length)];
 
 export function AdSidebars() {
-    const { gameMode } = useGame();
+    const { gameMode, showAds } = useGame();
     const [leftImage, setLeftImage] = useState(getRandomImage());
     const [rightImage, setRightImage] = useState(getRandomImage());
 
@@ -40,7 +40,7 @@ export function AdSidebars() {
         </a>
     );
 
-    if (gameMode === 'insane') return null;
+    if (!showAds || gameMode === 'insane') return null;
 
     return (
         <>

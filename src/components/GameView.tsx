@@ -1,8 +1,10 @@
 import { useLanguage } from "../contexts/language-context";
+import { useGame } from '../contexts/game-context'
 import { DinoGame } from "./dino-game";
 
 export function GameView() {
     const { language } = useLanguage();
+    const { toggleAds } = useGame();
 
     return (
         <div className="space-y-4 md:space-y-8 relative">
@@ -10,7 +12,7 @@ export function GameView() {
                 <img
                     src="/gamer.png"
                     alt="Gamer"
-                    onClick={() => window.open('https://fakeupdate.net/win10ue/', '_blank')}
+                    onClick={() => toggleAds()}
                     className={`cursor-pointer h-52 md:h-60 w-auto object-contain hover:scale-105 transition-transform duration-500 drop-shadow-2xl mt-0 md:mt-0 md:mb-0`}
                 />
                 <div className="flex flex-col items-center md:items-start md:gap-0 -mt-4 md:mt-0 md:-ml-4">

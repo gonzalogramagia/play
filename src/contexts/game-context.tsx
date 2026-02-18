@@ -5,15 +5,20 @@ export type GameMode = 'classic' | 'insane'
 interface GameContextType {
     gameMode: GameMode
     setGameMode: (mode: GameMode) => void
+    showAds: boolean
+    toggleAds: () => void
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined)
 
 export function GameProvider({ children }: { children: ReactNode }) {
     const [gameMode, setGameMode] = useState<GameMode>('classic')
+    const [showAds, setShowAds] = useState(true)
+
+    const toggleAds = () => setShowAds(prev => !prev)
 
     return (
-        <GameContext.Provider value={{ gameMode, setGameMode }}>
+        <GameContext.Provider value={{ gameMode, setGameMode, showAds, toggleAds }}>
             {children}
         </GameContext.Provider>
     )
