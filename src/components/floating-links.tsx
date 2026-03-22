@@ -4,7 +4,7 @@ import { useGame } from "../contexts/game-context";
 
 export function FloatingLinks() {
   const { language, t } = useLanguage();
-  const { gameMode } = useGame();
+  const { gameMode, showAds } = useGame();
 
   const homeUrl =
     language === "en" ? "https://hoy.today/en" : "https://hoy.today";
@@ -57,9 +57,13 @@ export function FloatingLinks() {
         </span>
       </div>
 
-      {/* Right Side Button Moovimiento solo en modo insano */}
-      {gameMode === "insane" && (
-        <div className="fixed bottom-8 right-8 z-30 transition-opacity duration-300 lg:hidden">
+      {/* Right Side Button Moovimiento: siempre visible en mobile, solo en desktop si ads ocultos y no insane */}
+        <div
+          className={
+            `fixed bottom-8 right-8 z-50 transition-opacity duration-300 ` +
+            ((gameMode === "insane" && window.innerWidth >= 1024) ? "hidden" : (showAds && window.innerWidth >= 1024 ? "hidden" : ""))
+          }
+        >
           <a
             href={
               language === "en"
@@ -75,7 +79,6 @@ export function FloatingLinks() {
             <Zap className="w-6 h-6 text-zinc-900 dark:text-white group-hover:text-yellow-500 transition-colors fill-none" />
           </a>
         </div>
-      )}
     </>
   );
 }
