@@ -29,10 +29,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     const translations: Record<Language, Record<string, string>> = {
         es: {
-            ariaHome: "Ir a Today",
-            ariaEmojis: "Ir a Emojis",
-            ariaMusic: "Ir a Música",
-            ariaPlay: "¡Hora de jugar!",
+            ariaHome: "Ir a Hoy & Today",
+            ariaEmojis: "Ir a Mil Emojis",
+            ariaMusic: "Ir a Music",
+            ariaPlay: "¡Ya estás aquí!",
             gameScore: "Puntaje",
             gameHighScore: "Puntaje máximo de la semana",
             gameHighScoreMobile: "Récord de la semana",
@@ -52,10 +52,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             gameShoot: 'Cargar y Tirar',
         },
         en: {
-            ariaHome: "Go to Today",
-            ariaEmojis: "Go to Emojis",
+            ariaHome: "Go to Hoy & Today",
+            ariaEmojis: "Go to Mil Emojis",
             ariaMusic: "Go to Music",
-            ariaPlay: "Game time!",
+            ariaPlay: "You are here!",
             gameScore: "Score",
             gameHighScore: "Best score of the week",
             gameHighScoreMobile: "Record of the week",

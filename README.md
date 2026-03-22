@@ -33,17 +33,22 @@
 ## 🕹 Usage
 
 ### 🌐 Language Support
+
 - The game automatically switches language based on the route (e.g., `/en` for English).
 
 ### 🚀 How to Play
+
 #### **General**
+
 - **Start/Restart**: Press **Any Key** when the game is over or starting.
 - **Objective**: Avoid obstacles to increase your score!
 
 #### **Classic Mode**
+
 - **Jump**: Press **Space**, **W**, **Arrow Up**, or **Click**.
 
 #### **Insano Mode**
+
 - **Jump**: Press **W** or **Arrow Up**.
 - **Movement**: Use **A / D** or **Left / Right Arrows** to move horizontally.
 - **Shoot**: Hold and release **Space** to charge and fire a rock.
@@ -51,10 +56,11 @@
 - **Survival**: Don't let the backward drag (which increases over time!) push you completely off the left side of the screen!
 
 ### 🧭 Quick Access
-- **Today** (📅): Go to your daily task manager
-- **Emojis** (😎): Access the emoji picker app
+
+- **Hoy & Today** (📅): Go to your daily task manager
+- **Mil Emojis** (😎): Access the emoji picker app
 - **Music** (🎵): Navigate to your video manager
-- **Play** (🎮): You are here!
+- **Play Antipala Pro** (🎮): You are here!
 - **Moovimiento** (⚡): Navigate to Moovimiento
 
 ---
