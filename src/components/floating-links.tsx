@@ -7,11 +7,11 @@ export function FloatingLinks() {
   const { gameMode, showAds } = useGame();
 
   const homeUrl =
-    language === "en" ? "https://hoy.today/en" : "https://hoy.today";
+    language === "en" ? "https://home.hoy.today/en" : "https://home.hoy.today";
   const emojisUrl =
-    language === "en" ? "https://milemojis.com/en" : "https://milemojis.com";
-  const bienEstateUrl =
-    language === "en" ? "https://bien.estate/en" : "https://bien.estate";
+    language === "en" ? "https://emojis.hoy.today/en" : "https://emojis.hoy.today";
+  const playlistUrl =
+    language === "en" ? "https://playlist.hoy.today/en" : "https://playlist.hoy.today";
 
   return (
     <>
@@ -37,9 +37,9 @@ export function FloatingLinks() {
           <Smile className="w-6 h-6 text-zinc-900 dark:text-white group-hover:text-yellow-500 transition-colors" />
         </a>
 
-        {/* Bien.Estate Button (icono CD en movimiento) */}
+        {/* Playlist Button (icono CD en movimiento) */}
         <a
-          href={bienEstateUrl}
+          href={playlistUrl}
           className="p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 group cursor-pointer"
           aria-label={t("ariaMusic")}
           title={t("ariaMusic")}
@@ -50,8 +50,8 @@ export function FloatingLinks() {
         {/* Moovimiento Button (Joystick) */}
         <span
           className="p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full shadow-lg transition-all group cursor-not-allowed opacity-50"
-          aria-label={t("ariaPlay")}
-          title={t("ariaPlay")}
+          aria-label={t("ariaMinigame")}
+          title={t("ariaMinigame")}
         >
           <Joystick className="w-6 h-6 text-zinc-900 dark:text-white transition-colors" />
         </span>
@@ -59,10 +59,9 @@ export function FloatingLinks() {
 
       {/* Right Side Button Moovimiento: siempre visible en mobile, solo en desktop si ads ocultos y no insane */}
         <div
-          className={
-            `fixed bottom-8 right-8 z-50 transition-opacity duration-300 ` +
-            ((gameMode === "insane" && window.innerWidth >= 1024) ? "hidden" : (showAds && window.innerWidth >= 1024 ? "hidden" : ""))
-          }
+          className={`fixed bottom-8 right-8 z-50 transition-opacity duration-300 ${
+            gameMode === "insane" ? "lg:hidden" : (showAds ? "xl:hidden" : "")
+          }`}
         >
           <a
             href={
@@ -73,8 +72,8 @@ export function FloatingLinks() {
             target="_blank"
             rel="noopener noreferrer"
             className="p-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 group cursor-pointer flex items-center justify-center"
-            aria-label={t("ariaPlay")}
-            title={t("ariaPlay")}
+            aria-label={t("ariaMoovimiento")}
+            title={t("ariaMoovimiento")}
           >
             <Zap className="w-6 h-6 text-zinc-900 dark:text-white group-hover:text-yellow-500 transition-colors fill-none" />
           </a>

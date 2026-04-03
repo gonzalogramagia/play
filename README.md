@@ -1,8 +1,8 @@
-# 🎮 Anti Pala Pro
+# 🎮 Antipala Pro
 
 **A high-stakes arcade game where you must dodge shovels, fight back, and survive the relentless drag.**
 
-"Anti Pala Pro" is a fast-paced survival runner. Whether you're dodging classic shovels or blasting through obstacles in Insane Mode, you'll need quick reflexes and precise movement to stay on the screen and climb the weekly leaderboard.
+"Antipala Pro" is a fast-paced survival runner. Whether you're dodging classic shovels or blasting through obstacles in Insane Mode, you'll need quick reflexes and precise movement to stay on the screen and climb the weekly leaderboard.
 
 ---
 
@@ -55,13 +55,13 @@
 - **Enemies**: Destructible shovels (have health bars) and **Invincible Cops** (must be jumped over).
 - **Survival**: Don't let the backward drag (which increases over time!) push you completely off the left side of the screen!
 
-### 🧭 Quick Access
-
-- **Hoy & Today** (📅): Go to your daily task manager
-- **Mil Emojis** (😎): Access the emoji picker app
-- **Music** (🎵): Navigate to your video manager
-- **Play Antipala Pro** (🎮): You are here!
-- **Moovimiento** (⚡): Navigate to Moovimiento
+### 🔗 Quick Links
+Floating buttons for essential services:
+  - **[Home](https://home.hoy.today)**: Go to your daily task manager.
+  - **[Emojis](https://emojis.hoy.today)**: Fast access to emoji library.
+  - **[Playlist](https://playlist.hoy.today)**: Personal pinned video player for your favorite YouTube music & content.
+  - **Minigame**: You are here!
+  - **[Moovimiento](https://moovimiento.com/en)**: Visit Moovimiento.
 
 ---
 

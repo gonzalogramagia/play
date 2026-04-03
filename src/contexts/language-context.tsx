@@ -30,9 +30,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const translations: Record<Language, Record<string, string>> = {
         es: {
             ariaHome: "Ir a Hoy & Today",
-            ariaEmojis: "Ir a Mil Emojis",
-            ariaMusic: "Ir a Music",
-            ariaPlay: "¡Ya estás aquí!",
+            ariaEmojis: "Ir a Emojis",
+            ariaMusic: "Ir a Playlist",
+            ariaMinigame: "¡Ya estás aquí!",
+            ariaMoovimiento: "Ir a Moovimiento",
             gameScore: "Puntaje",
             gameHighScore: "Puntaje máximo de la semana",
             gameHighScoreMobile: "Récord de la semana",
@@ -53,9 +54,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         },
         en: {
             ariaHome: "Go to Hoy & Today",
-            ariaEmojis: "Go to Mil Emojis",
-            ariaMusic: "Go to Music",
-            ariaPlay: "You are here!",
+            ariaEmojis: "Go to Emojis",
+            ariaMusic: "Go to Playlist",
+            ariaMinigame: "You are here!",
+            ariaMoovimiento: "Go to Moovimiento",
             gameScore: "Score",
             gameHighScore: "Best score of the week",
             gameHighScoreMobile: "Record of the week",
